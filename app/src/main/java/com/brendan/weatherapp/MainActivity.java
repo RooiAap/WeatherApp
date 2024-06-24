@@ -1,0 +1,192 @@
+package com.brendan.weatherapp;
+
+import android.content.pm.PackageManager;
+import android.os.Bundle;
+import android.util.Log;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+import androidx.activity.EdgeToEdge;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.graphics.Insets;
+import androidx.core.splashscreen.SplashScreen;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
+
+import com.brendan.weatherapp.models.Weather;
+import com.brendan.weatherapp.services.WeatherService;
+
+import org.json.JSONException;
+
+import java.io.IOException;
+import java.util.Locale;
+import java.util.Objects;
+
+public class MainActivity extends AppCompatActivity {
+
+    private final static int FINE_LOCATION_CODE = 1;
+    private Weather weather;
+    private WeatherService weatherService;
+
+    private TextView locationText;
+    private TextView temperatureText;
+    private TextView conditionText;
+    private TextView sunriseDataText;
+    private TextView sunsetDataText;
+    private TextView tempMinDataText;
+    private TextView tempMaxDataText;
+    private ImageView conditionImage;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        SplashScreen.installSplashScreen(this);
+        super.onCreate(savedInstanceState);
+        EdgeToEdge.enable(this);
+        setContentView(R.layout.activity_main);
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
+            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
+            return insets;
+        });
+
+        locationText = findViewById(R.id.locationText);
+        temperatureText = findViewById(R.id.temperatureText);
+        conditionText = findViewById(R.id.conditionText);
+        sunriseDataText = findViewById(R.id.sunriseDataText);
+        sunsetDataText = findViewById(R.id.sunsetDataText);
+        tempMinDataText = findViewById(R.id.tempMinDataText);
+        tempMaxDataText = findViewById(R.id.tempMaxDataText);
+
+        conditionImage = findViewById(R.id.conditionImage);
+
+        weatherService = new WeatherService(this, getResources().getString(R.string.api_key), FINE_LOCATION_CODE,
+                (location -> {
+                    if(location != null){
+                        String lat = Double.toString(location.getLatitude());
+                        String lon = Double.toString(location.getLongitude());
+
+                        String coordinates = String.format(Locale.getDefault(), "%s, %s", lat, lon);
+                        Log.i("WeatherService", coordinates);
+
+                        try{
+                            weather = weatherService.getWeather(coordinates);
+
+                            locationText.setText(weather.getLocation());
+                            temperatureText.setText(String.format("%s°C", String.valueOf(weather.getTemperature())));
+                            conditionText.setText(weather.getMainCondition());
+                            sunriseDataText.setText(weather.getSunriseTime());
+                            sunsetDataText.setText(weather.getSunsetTime());
+                            tempMinDataText.setText(String.format("%s°C", String.valueOf(weather.getTemperatureMin())));
+                            tempMaxDataText.setText(String.format("%s°C", String.valueOf(weather.getTemperatureMax())));
+
+                            conditionImage.setImageResource(getConditionImageId(weather.getMainCondition()));
+                        } catch (JSONException | IOException | InterruptedException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
+                }
+                )
+        );
+    }
+
+    private int getConditionImageId(String condition) {
+
+        boolean sunCondition = Objects.equals(condition, "Sunny");
+
+        boolean moonCondition = Objects.equals(condition, "Clear");
+
+        boolean partlyCloudyCondition = Objects.equals(condition, "Partly cloudy");
+
+        boolean cloudyCondition = (
+                Objects.equals(condition, "Cloudy") ||
+                Objects.equals(condition, "Overcast") ||
+                Objects.equals(condition, "Mist") ||
+                Objects.equals(condition, "Fog") ||
+                Objects.equals(condition, "Freezing fog") ||
+                Objects.equals(condition, "Blizzard")
+        );
+
+        boolean partlyRainyCondition = (
+                Objects.equals(condition, "Patchy rain possible") ||
+                Objects.equals(condition, "Patchy light drizzle") ||
+                Objects.equals(condition, "Patchy light rain")
+        );
+
+        boolean rainCondition = (
+                Objects.equals(condition, "Light drizzle") ||
+                Objects.equals(condition, "Freezing drizzle") ||
+                Objects.equals(condition, "Heavy freezing drizzle") ||
+                Objects.equals(condition, "Light rain") ||
+                Objects.equals(condition, "Moderate rain at times") ||
+                Objects.equals(condition, "Moderate rain") ||
+                Objects.equals(condition, "Heavy rain at times") ||
+                Objects.equals(condition, "Heavy rain") ||
+                Objects.equals(condition, "Light freezing rain") ||
+                Objects.equals(condition, "Moderate or heavy freezing rain") ||
+                Objects.equals(condition, "Light rain shower") ||
+                Objects.equals(condition, "Moderate or heavy rain shower") ||
+                Objects.equals(condition, "Torrential rain shower")
+        );
+
+        boolean thunderstormCondition = (
+                Objects.equals(condition, "Patchy light rain with thunder") ||
+                Objects.equals(condition, "Moderate or heavy rain with thunder")
+        );
+
+        if(sunCondition){
+            return R.drawable.sun;
+        }else if(moonCondition){
+            return R.drawable.moon;
+        }else if(partlyCloudyCondition){
+            return R.drawable.partly_cloudy;
+        }else if(cloudyCondition){
+            return R.drawable.cloud;
+        }else if(partlyRainyCondition){
+            return R.drawable.partly_rainy;
+        }else if(rainCondition){
+            return R.drawable.rain;
+        }else if(thunderstormCondition){
+            return R.drawable.thunderstorm;
+        }else{
+            return R.drawable.partly_cloudy;
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == FINE_LOCATION_CODE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                weatherService = new WeatherService(this, getResources().getString(R.string.api_key), FINE_LOCATION_CODE,
+                        (location -> {
+                            if(location != null){
+                                String lat = Double.toString(location.getLatitude());
+                                String lon = Double.toString(location.getLongitude());
+
+                                String coordinates = String.format(Locale.getDefault(), "%s, %s", lat, lon);
+                                Log.i("WeatherService", coordinates);
+
+                                try{
+                                    weather = weatherService.getWeather(coordinates);
+
+                                    locationText.setText(weather.getLocation());
+                                    temperatureText.setText(String.format("%s°C", String.valueOf(weather.getTemperature())));
+                                    conditionText.setText(weather.getMainCondition());
+                                    sunriseDataText.setText(weather.getSunriseTime());
+                                    sunsetDataText.setText(weather.getSunsetTime());
+                                    tempMinDataText.setText(String.format("%s°C", String.valueOf(weather.getTemperatureMin())));
+                                    tempMaxDataText.setText(String.format("%s°C", String.valueOf(weather.getTemperatureMax())));
+
+                                    conditionImage.setImageResource(getConditionImageId(weather.getMainCondition()));
+                                } catch (JSONException | IOException | InterruptedException e) {
+                                    throw new RuntimeException(e);
+                                }
+                            }
+                        }
+                        )
+                );
+            }
+        }
+    }
+}
