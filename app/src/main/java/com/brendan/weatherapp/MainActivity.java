@@ -44,35 +44,36 @@ public class MainActivity extends AppCompatActivity {
         });
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
+        updateCurrentWeatherData();
+    }
 
-        weatherService = new WeatherService(this, getResources().getString(R.string.api_key), FINE_LOCATION_CODE,
-                (location -> {
-                    if(location != null){
-                        String lat = Double.toString(location.getLatitude());
-                        String lon = Double.toString(location.getLongitude());
+    private void updateCurrentWeatherData() {
+        WeatherService.getGPSLocation(this, FINE_LOCATION_CODE, location -> {
+            if (location != null) {
+                String lat = Double.toString(location.getLatitude());
+                String lon = Double.toString(location.getLongitude());
 
-                        String coordinates = String.format(Locale.getDefault(), "%s, %s", lat, lon);
-                        Log.i("WeatherService", coordinates);
+                String coordinates = String.format(Locale.getDefault(), "%s, %s", lat, lon);
+                Log.i("WeatherService", coordinates);
 
-                        try{
-                            weather = weatherService.getWeather(coordinates);
-
-                            binding.locationText.setText(weather.getLocation());
-                            binding.temperatureText.setText(String.format(Locale.getDefault(), "%d°C", weather.getTemperature()));
-                            binding.conditionText.setText(weather.getMainCondition());
-                            binding.sunriseDataText.setText(weather.getSunriseTime());
-                            binding.sunsetDataText.setText(weather.getSunsetTime());
-                            binding.tempMinDataText.setText(String.format(Locale.getDefault(), "%d°C", weather.getTemperatureMin()));
-                            binding.tempMaxDataText.setText(String.format(Locale.getDefault(), "%d°C", weather.getTemperatureMax()));
-
-                            binding.conditionImage.setImageResource(getConditionImageId(weather.getMainCondition()));
-                        } catch (JSONException | IOException | InterruptedException e) {
-                            throw new RuntimeException(e);
-                        }
-                    }
+                try {
+                    updateWeatherItems(WeatherService.getWeather(this, coordinates, getResources().getString(R.string.api_key)));
+                } catch (JSONException | IOException | InterruptedException e) {
+                    throw new RuntimeException(e);
                 }
-                )
-        );
+            }
+        });
+    }
+
+    private void updateWeatherItems(Weather weather) {
+        binding.locationText.setText(weather.getLocation());
+        binding.temperatureText.setText(String.format(Locale.getDefault(), "%d°C", weather.getTemperature()));
+        binding.conditionText.setText(weather.getMainCondition());
+        binding.sunriseDataText.setText(weather.getSunriseTime());
+        binding.sunsetDataText.setText(weather.getSunsetTime());
+        binding.tempMinDataText.setText(String.format(Locale.getDefault(), "%d°C", weather.getTemperatureMin()));
+        binding.tempMaxDataText.setText(String.format(Locale.getDefault(), "%d°C", weather.getTemperatureMax()));
+        binding.conditionImage.setImageResource(getConditionImageId(weather.getMainCondition()));
     }
 
     private int getConditionImageId(String condition) {
@@ -119,21 +120,21 @@ public class MainActivity extends AppCompatActivity {
                 Objects.equals(condition, "Moderate or heavy rain with thunder")
         );
 
-        if(sunCondition){
+        if (sunCondition) {
             return R.drawable.sun;
-        }else if(moonCondition){
+        } else if (moonCondition) {
             return R.drawable.moon;
-        }else if(partlyCloudyCondition){
+        } else if (partlyCloudyCondition) {
             return R.drawable.partly_cloudy;
-        }else if(cloudyCondition){
+        } else if (cloudyCondition) {
             return R.drawable.cloud;
-        }else if(partlyRainyCondition){
+        } else if (partlyRainyCondition) {
             return R.drawable.partly_rainy;
-        }else if(rainCondition){
+        } else if (rainCondition) {
             return R.drawable.rain;
-        }else if(thunderstormCondition){
+        } else if (thunderstormCondition) {
             return R.drawable.thunderstorm;
-        }else{
+        } else {
             return R.drawable.partly_cloudy;
         }
     }
@@ -143,34 +144,7 @@ public class MainActivity extends AppCompatActivity {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == FINE_LOCATION_CODE) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                weatherService = new WeatherService(this, getResources().getString(R.string.api_key), FINE_LOCATION_CODE,
-                        (location -> {
-                            if(location != null){
-                                String lat = Double.toString(location.getLatitude());
-                                String lon = Double.toString(location.getLongitude());
-
-                                String coordinates = String.format(Locale.getDefault(), "%s, %s", lat, lon);
-                                Log.i("WeatherService", coordinates);
-
-                                try{
-                                    weather = weatherService.getWeather(coordinates);
-
-                                    binding.locationText.setText(weather.getLocation());
-                                    binding.temperatureText.setText(String.format(Locale.getDefault(), "%d°C", weather.getTemperature()));
-                                    binding.conditionText.setText(weather.getMainCondition());
-                                    binding.sunriseDataText.setText(weather.getSunriseTime());
-                                    binding.sunsetDataText.setText(weather.getSunsetTime());
-                                    binding.tempMinDataText.setText(String.format(Locale.getDefault(), "%d°C", weather.getTemperatureMin()));
-                                    binding.tempMaxDataText.setText(String.format(Locale.getDefault(), "%d°C", weather.getTemperatureMax()));
-
-                                    binding.conditionImage.setImageResource(getConditionImageId(weather.getMainCondition()));
-                                } catch (JSONException | IOException | InterruptedException e) {
-                                    throw new RuntimeException(e);
-                                }
-                            }
-                        }
-                        )
-                );
+                updateCurrentWeatherData();
             }
         }
     }
