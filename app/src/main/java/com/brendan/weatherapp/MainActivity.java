@@ -3,8 +3,6 @@ package com.brendan.weatherapp;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
-import android.widget.ImageView;
-import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
@@ -13,7 +11,9 @@ import androidx.core.graphics.Insets;
 import androidx.core.splashscreen.SplashScreen;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.databinding.DataBindingUtil;
 
+import com.brendan.weatherapp.databinding.ActivityMainBinding;
 import com.brendan.weatherapp.models.Weather;
 import com.brendan.weatherapp.services.WeatherService;
 
@@ -25,18 +25,11 @@ import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
 
+    ActivityMainBinding binding;
+
     private final static int FINE_LOCATION_CODE = 1;
     private Weather weather;
     private WeatherService weatherService;
-
-    private TextView locationText;
-    private TextView temperatureText;
-    private TextView conditionText;
-    private TextView sunriseDataText;
-    private TextView sunsetDataText;
-    private TextView tempMinDataText;
-    private TextView tempMaxDataText;
-    private ImageView conditionImage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,15 +43,7 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
 
-        locationText = findViewById(R.id.locationText);
-        temperatureText = findViewById(R.id.temperatureText);
-        conditionText = findViewById(R.id.conditionText);
-        sunriseDataText = findViewById(R.id.sunriseDataText);
-        sunsetDataText = findViewById(R.id.sunsetDataText);
-        tempMinDataText = findViewById(R.id.tempMinDataText);
-        tempMaxDataText = findViewById(R.id.tempMaxDataText);
-
-        conditionImage = findViewById(R.id.conditionImage);
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
 
         weatherService = new WeatherService(this, getResources().getString(R.string.api_key), FINE_LOCATION_CODE,
                 (location -> {
@@ -72,15 +57,15 @@ public class MainActivity extends AppCompatActivity {
                         try{
                             weather = weatherService.getWeather(coordinates);
 
-                            locationText.setText(weather.getLocation());
-                            temperatureText.setText(String.format("%s°C", String.valueOf(weather.getTemperature())));
-                            conditionText.setText(weather.getMainCondition());
-                            sunriseDataText.setText(weather.getSunriseTime());
-                            sunsetDataText.setText(weather.getSunsetTime());
-                            tempMinDataText.setText(String.format("%s°C", String.valueOf(weather.getTemperatureMin())));
-                            tempMaxDataText.setText(String.format("%s°C", String.valueOf(weather.getTemperatureMax())));
+                            binding.locationText.setText(weather.getLocation());
+                            binding.temperatureText.setText(String.format(Locale.getDefault(), "%d°C", weather.getTemperature()));
+                            binding.conditionText.setText(weather.getMainCondition());
+                            binding.sunriseDataText.setText(weather.getSunriseTime());
+                            binding.sunsetDataText.setText(weather.getSunsetTime());
+                            binding.tempMinDataText.setText(String.format(Locale.getDefault(), "%d°C", weather.getTemperatureMin()));
+                            binding.tempMaxDataText.setText(String.format(Locale.getDefault(), "%d°C", weather.getTemperatureMax()));
 
-                            conditionImage.setImageResource(getConditionImageId(weather.getMainCondition()));
+                            binding.conditionImage.setImageResource(getConditionImageId(weather.getMainCondition()));
                         } catch (JSONException | IOException | InterruptedException e) {
                             throw new RuntimeException(e);
                         }
@@ -170,15 +155,15 @@ public class MainActivity extends AppCompatActivity {
                                 try{
                                     weather = weatherService.getWeather(coordinates);
 
-                                    locationText.setText(weather.getLocation());
-                                    temperatureText.setText(String.format("%s°C", String.valueOf(weather.getTemperature())));
-                                    conditionText.setText(weather.getMainCondition());
-                                    sunriseDataText.setText(weather.getSunriseTime());
-                                    sunsetDataText.setText(weather.getSunsetTime());
-                                    tempMinDataText.setText(String.format("%s°C", String.valueOf(weather.getTemperatureMin())));
-                                    tempMaxDataText.setText(String.format("%s°C", String.valueOf(weather.getTemperatureMax())));
+                                    binding.locationText.setText(weather.getLocation());
+                                    binding.temperatureText.setText(String.format(Locale.getDefault(), "%d°C", weather.getTemperature()));
+                                    binding.conditionText.setText(weather.getMainCondition());
+                                    binding.sunriseDataText.setText(weather.getSunriseTime());
+                                    binding.sunsetDataText.setText(weather.getSunsetTime());
+                                    binding.tempMinDataText.setText(String.format(Locale.getDefault(), "%d°C", weather.getTemperatureMin()));
+                                    binding.tempMaxDataText.setText(String.format(Locale.getDefault(), "%d°C", weather.getTemperatureMax()));
 
-                                    conditionImage.setImageResource(getConditionImageId(weather.getMainCondition()));
+                                    binding.conditionImage.setImageResource(getConditionImageId(weather.getMainCondition()));
                                 } catch (JSONException | IOException | InterruptedException e) {
                                     throw new RuntimeException(e);
                                 }
