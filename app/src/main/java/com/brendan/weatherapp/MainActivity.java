@@ -57,7 +57,7 @@ public class MainActivity extends AppCompatActivity {
                 Log.i("WeatherService", coordinates);
 
                 try {
-                    updateWeatherItems(WeatherService.getWeather(this, coordinates, getResources().getString(R.string.api_key)));
+                    updateWeatherViews(WeatherService.getWeather(this, coordinates, getResources().getString(R.string.api_key)));
                 } catch (JSONException | IOException | InterruptedException e) {
                     throw new RuntimeException(e);
                 }
@@ -65,7 +65,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void updateWeatherItems(Weather weather) {
+    private void updateWeatherViews(Weather weather) {
         binding.locationText.setText(weather.getLocation());
         binding.temperatureText.setText(String.format(Locale.getDefault(), "%d°C", weather.getTemperature()));
         binding.conditionText.setText(weather.getMainCondition());
