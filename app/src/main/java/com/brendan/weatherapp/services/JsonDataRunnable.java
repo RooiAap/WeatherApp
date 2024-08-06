@@ -7,7 +7,7 @@ import java.io.IOException;
 
 public class JsonDataRunnable implements Runnable{
 
-    private String url;
+    private final String url;
     private JSONObject json;
 
     public JsonDataRunnable(String url) {

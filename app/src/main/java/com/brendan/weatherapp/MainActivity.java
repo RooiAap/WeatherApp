@@ -17,9 +17,6 @@ import com.brendan.weatherapp.databinding.ActivityMainBinding;
 import com.brendan.weatherapp.models.Weather;
 import com.brendan.weatherapp.services.WeatherService;
 
-import org.json.JSONException;
-
-import java.io.IOException;
 import java.util.Locale;
 import java.util.Objects;
 
@@ -28,14 +25,11 @@ public class MainActivity extends AppCompatActivity {
     ActivityMainBinding binding;
 
     private final static int FINE_LOCATION_CODE = 1;
-    private Weather weather;
-    private WeatherService weatherService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         SplashScreen.installSplashScreen(this);
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
@@ -58,7 +52,7 @@ public class MainActivity extends AppCompatActivity {
 
                 try {
                     updateWeatherViews(WeatherService.getWeather(this, coordinates, getResources().getString(R.string.api_key)));
-                } catch (JSONException | IOException | InterruptedException e) {
+                } catch (Exception e) {
                     throw new RuntimeException(e);
                 }
             }
