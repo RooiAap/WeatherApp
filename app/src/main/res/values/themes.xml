@@ -1,19 +1,15 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
-    <style name="Base.Theme.WeatherApp" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+    <style name="Theme.WeatherApp" parent="Theme.AppCompat.NoActionBar">
+        <item name="android:statusBarColor">@color/teal</item>
+        <item name="android:navigationBarColor">@color/black</item>
     </style>
 
-    <style name="Theme.WeatherApp" parent="Base.Theme.WeatherApp" >
-        <item name="colorPrimary">@color/teal</item>
-        <item name="colorSecondary">@color/black</item>
-
+    <style name="Theme.WeatherApp.Splashscreen" parent="Theme.AppCompat.NoActionBar" >
         <item name="windowSplashScreenBackground">@drawable/home_screen_background_drawable</item>
         <item name="windowSplashScreenAnimatedIcon">@drawable/ic_launcher_foreground</item>
         <item name="windowSplashScreenAnimationDuration">2000</item>
         <item name="postSplashScreenTheme">@style/Theme.WeatherApp</item>
-
         <item name="android:navigationBarColor">@color/black</item>
     </style>
 
