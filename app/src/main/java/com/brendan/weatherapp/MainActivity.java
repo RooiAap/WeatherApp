@@ -4,7 +4,6 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
 
-import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.splashscreen.SplashScreen;
@@ -27,7 +26,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         SplashScreen.installSplashScreen(this);
         super.onCreate(savedInstanceState);
-//        EdgeToEdge.enable(this);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
         updateCurrentWeatherData();
     }
@@ -42,7 +40,7 @@ public class MainActivity extends AppCompatActivity {
                 Log.i("WeatherService", coordinates);
 
                 try {
-                    updateWeatherViews(WeatherService.getWeather(this, coordinates, getResources().getString(R.string.api_key)));
+                    updateWeatherViews(WeatherService.getWeather(coordinates, BuildConfig.API_KEY));
                 } catch (Exception e) {
                     throw new RuntimeException(e);
                 }

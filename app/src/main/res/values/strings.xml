@@ -7,6 +7,9 @@
     <string name="sunset_text">Sunset</string>
     <string name="temp_min">Min</string>
     <string name="temp_max">Max</string>
-    <string name="base_weather_url">https://api.weatherapi.com/v1/forecast.json?</string>
-    <string name="api_key">32d2b5446af74d7b83180955242504</string>
+    <string name="condition_description">Condition Image</string>
+    <string name="sunrise_description">Sunrise Image</string>
+    <string name="sunset_description">Sunset Image</string>
+    <string name="temp_min_description">Minimum temperature Image</string>
+    <string name="temp_max_description">Maximum temperature Image</string>
 </resources>

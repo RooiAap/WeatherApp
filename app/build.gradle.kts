@@ -4,16 +4,19 @@ plugins {
 
 android {
     namespace = "com.brendan.weatherapp"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.brendan.weatherapp"
         minSdk = 28
-        targetSdk = 34
+        targetSdk = 35
         versionCode = 1
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        buildConfigField("String", "API_KEY", "\"32d2b5446af74d7b83180955242504\"")
+        buildConfigField("String", "BASE_WEATHER_URL", "\"https://api.weatherapi.com/v1/forecast.json?\"")
     }
 
     buildTypes {
@@ -23,20 +26,21 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
 
     buildFeatures {
         dataBinding = true
+        buildConfig = true
     }
 }
 
 dependencies {
 
-    implementation("com.google.android.gms:play-services-location:21.2.0")
-    implementation("com.android.volley:volley:1.2.1")
-    implementation("androidx.core:core-splashscreen:1.2.0-alpha01")
+    implementation(libs.play.services.location)
+    implementation(libs.volley)
+    implementation(libs.core.splashscreen)
     implementation(libs.appcompat)
     implementation(libs.material)
     implementation(libs.activity)

@@ -4,14 +4,13 @@ import static androidx.core.app.ActivityCompat.requestPermissions;
 
 import android.Manifest;
 import android.app.Activity;
-import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.util.Log;
 
 import androidx.core.content.ContextCompat;
 
-import com.brendan.weatherapp.R;
+import com.brendan.weatherapp.BuildConfig;
 import com.brendan.weatherapp.models.Weather;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -21,13 +20,11 @@ import com.google.android.gms.tasks.Task;
 
 import org.json.JSONException;
 
-import java.io.IOException;
-
 public class WeatherService {
 
-    public static Weather getWeather(Context context, String location, String apiKey) throws InterruptedException, JSONException, IOException {
+    public static Weather getWeather(String location, String apiKey) throws InterruptedException, JSONException {
         Log.i("WeatherService", "getWeather(): " + location);
-        String baseUrl = context.getResources().getString(R.string.base_weather_url);
+        String baseUrl = BuildConfig.BASE_WEATHER_URL;
         String url = String.format("%skey=%s&q=%s&days=1&aqi=no&alerts=no", baseUrl, apiKey, location);
 
         JsonDataRunnable runnable = new JsonDataRunnable(url);
