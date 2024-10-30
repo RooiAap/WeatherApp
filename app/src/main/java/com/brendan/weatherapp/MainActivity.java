@@ -3,7 +3,10 @@ package com.brendan.weatherapp;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.FrameLayout;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.splashscreen.SplashScreen;
@@ -12,21 +15,58 @@ import androidx.databinding.DataBindingUtil;
 import com.brendan.weatherapp.databinding.ActivityMainBinding;
 import com.brendan.weatherapp.models.Weather;
 import com.brendan.weatherapp.services.WeatherService;
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
 
 import java.util.Locale;
 import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
 
-    ActivityMainBinding binding;
+    private ActivityMainBinding binding;
 
     private final static int FINE_LOCATION_CODE = 1;
+    private final static int BOTTOM_SHEET_OFFSET = 200;
+    private final static int BOTTOM_SHEET_PEEK = 150;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         SplashScreen.installSplashScreen(this);
         super.onCreate(savedInstanceState);
+
+        // Get UI binding for activity
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
+
+        // Set up bottom sheet behaviour
+        BottomSheetBehavior<FrameLayout> bottomSheetBehavior = BottomSheetBehavior.from(binding.bottomSheet);
+        bottomSheetBehavior.setFitToContents(false);
+        bottomSheetBehavior.setExpandedOffset(BOTTOM_SHEET_OFFSET);
+        bottomSheetBehavior.setPeekHeight(BOTTOM_SHEET_PEEK, true);
+        bottomSheetBehavior.setHideable(false);
+        bottomSheetBehavior.setSaveFlags(BottomSheetBehavior.SAVE_FIT_TO_CONTENTS | BottomSheetBehavior.SAVE_PEEK_HEIGHT | BottomSheetBehavior.SAVE_HIDEABLE);
+        OnBackPressedCallback bottomSheetBackCallback = new OnBackPressedCallback(false) {
+            @Override
+            public void handleOnBackPressed() {
+                bottomSheetBehavior.handleBackInvoked();
+            }
+        };
+        getOnBackPressedDispatcher().addCallback(this, bottomSheetBackCallback);
+        bottomSheetBehavior.addBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
+            @Override
+            public void onStateChanged(@NonNull View bottomSheet, int newState) {
+                if (newState == BottomSheetBehavior.STATE_EXPANDED || newState == BottomSheetBehavior.STATE_HALF_EXPANDED) {
+                    bottomSheetBackCallback.setEnabled(true);
+                } else if (newState == BottomSheetBehavior.STATE_COLLAPSED || newState == BottomSheetBehavior.STATE_HIDDEN) {
+                    bottomSheetBackCallback.setEnabled(false);
+                }
+            }
+
+            @Override
+            public void onSlide(@NonNull View bottomSheet, float slideOffset) {
+
+            }
+        });
+
+        // Get initial weather data
         updateCurrentWeatherData();
     }
 
