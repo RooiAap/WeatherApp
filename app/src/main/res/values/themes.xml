@@ -13,4 +13,8 @@
         <item name="android:navigationBarColor">@color/black</item>
     </style>
 
+    <style name="Theme.BottomSheet" parent="Widget.Material3.BottomSheet">
+        <item name="backgroundTint">@color/dark_teal</item>
+    </style>
+
 </resources>

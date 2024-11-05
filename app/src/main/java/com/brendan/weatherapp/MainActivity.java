@@ -11,12 +11,16 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.splashscreen.SplashScreen;
 import androidx.databinding.DataBindingUtil;
+import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.brendan.weatherapp.databinding.ActivityMainBinding;
 import com.brendan.weatherapp.models.Weather;
 import com.brendan.weatherapp.services.WeatherService;
+import com.brendan.weatherapp.view.InfoRecyclerAdapter;
+import com.brendan.weatherapp.view.model.WeatherInfoItem;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 
+import java.util.ArrayList;
 import java.util.Locale;
 import java.util.Objects;
 
@@ -65,6 +69,22 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
+
+        ArrayList<WeatherInfoItem> weatherItems = new ArrayList<>();
+        weatherItems.add(new WeatherInfoItem("UV Index", "7", ""));
+        weatherItems.add(new WeatherInfoItem("Humidity", "23", "%"));
+        weatherItems.add(new WeatherInfoItem("Wind", "27", "km/h"));
+        weatherItems.add(new WeatherInfoItem("Dew Point", "8", "°C"));
+        weatherItems.add(new WeatherInfoItem("Pressure", "1034", "mb"));
+        weatherItems.add(new WeatherInfoItem("Visibility", "9.66", "km"));
+        weatherItems.add(new WeatherInfoItem("Moonrise", "18:00", ""));
+        weatherItems.add(new WeatherInfoItem("Moonset", "04:12", ""));
+
+        InfoRecyclerAdapter adapter = new InfoRecyclerAdapter(weatherItems);
+
+        binding.infoRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        binding.infoRecyclerView.setHasFixedSize(true);
+        binding.infoRecyclerView.setAdapter(adapter);
 
         // Get initial weather data
         updateCurrentWeatherData();
